@@ -8,8 +8,9 @@ using UnityEngine;
 /// </summary>
 public class Launcher : MonoBehaviour
 {
+    
     /// <summary>接触しているコライダー</summary>
-    Collider2D m_touchingCollider = default;
+    List<Collider2D> m_touchingCollider = new List<Collider2D>();
 
     /// <summary>
     /// 接触している Rigidbody を打ち上げる。
@@ -17,17 +18,22 @@ public class Launcher : MonoBehaviour
     /// <param name="power">打ち上げる力</param>
     public void Launch(float power)
     {
-        Rigidbody2D rb = m_touchingCollider?.GetComponent<Rigidbody2D>();
-        rb?.AddForce(Vector2.up * power, ForceMode2D.Impulse);
+        foreach (var item in m_touchingCollider)
+        {
+            Rigidbody2D rb = item?.GetComponent<Rigidbody2D>();
+            rb?.AddForce(Vector2.up * power, ForceMode2D.Impulse);
+        }
+        
+
     }    
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        m_touchingCollider = collision.collider;
+        m_touchingCollider.Add(collision.collider);
     }
 
     void OnCollisionExit2D(Collision2D collision)
     {
-        m_touchingCollider = null;
+        m_touchingCollider.Remove(collision.collider);
     }
 }
